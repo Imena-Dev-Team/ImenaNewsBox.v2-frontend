@@ -1,0 +1,18 @@
+# Line endings: keep LF in the repository and in the working tree on every OS.
+# Windows checkouts used to be CRLF (core.autocrlf=true), which leaks
+# carriage returns into Linux containers and breaks shell scripts there.
+* text=auto eol=lf
+
+# Windows-only files keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary assets are never converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary

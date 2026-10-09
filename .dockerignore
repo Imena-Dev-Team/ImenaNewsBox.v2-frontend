@@ -1,0 +1,41 @@
+# Files sent to the Docker daemon during `docker build`.
+# Keep this tight: every excluded path makes builds faster and images smaller.
+
+# Dependencies are installed inside the image from the lock file, never copied in.
+node_modules
+**/node_modules
+
+# Build output and caches
+.next
+out
+build
+dist
+coverage
+.turbo
+*.tsbuildinfo
+next-env.d.ts
+
+# Version control and CI
+.git
+.gitignore
+.github
+
+# Editors
+.vscode
+.idea
+*.swp
+
+# Never bake local config or secrets into an image.
+# NEXT_PUBLIC_* values are passed as build args instead (see DOCKER.md).
+.env
+.env.*
+!.env.example
+
+# Docs and meta files that the app never serves
+*.md
+!README.md
+LICENSE
+.DS_Store
+Dockerfile
+docker-compose.yml
+.dockerignore
