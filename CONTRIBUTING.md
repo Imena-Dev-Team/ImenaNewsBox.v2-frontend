@@ -150,6 +150,8 @@ pnpm dev
 
 Open http://localhost:3000. The page reloads automatically when you save a file.
 
+> **Don't want to install Node and pnpm?** You can run the whole thing in Docker instead — see [DOCKER.md](./DOCKER.md). Everything else in this guide works the same either way.
+
 **Step 6. Run the checks** to confirm everything works on your machine:
 
 ```bash
@@ -563,6 +565,7 @@ Mention new dependencies and why you chose them in your PR description.
 | `pnpm typecheck` says types like `LayoutProps` are missing | Run it through the script (`pnpm typecheck`), which generates Next.js's route types first. Plain `tsc` won't. |
 | "Hydration mismatch" warning | The server and browser rendered different HTML, usually from dates, `Math.random()` or checks like `typeof window`. Ask for help if you're stuck. |
 | 401 responses from the API | The token is missing or expired. Log in again. |
+| Docker build fails or is very slow | Dependency downloads go through your network/proxy and can time out. Re-run the same command (downloads are cached, so each retry makes progress), and see [DOCKER.md](./DOCKER.md#troubleshooting). |
 
 If none of these help, ask in the team channel with the exact error message and what you ran.
 

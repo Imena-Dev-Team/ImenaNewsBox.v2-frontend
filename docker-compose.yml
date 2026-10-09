@@ -1,0 +1,73 @@
+# Run the app the same way on Windows, macOS and Linux.
+#
+#   docker compose up                      dev server with hot reload on :3000
+#   docker compose --profile prod up       production build on :3001
+#   docker compose down -v                 stop, and wipe the caches
+#
+# See DOCKER.md for the details.
+
+name: imenanewsbox-v2
+
+services:
+  web:
+    # Default service: no profile, so a plain `docker compose up` runs it.
+    build:
+      context: .
+      target: dev
+    image: imenanewsbox-v2:dev
+    init: true
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    environment:
+      # Set by compose rather than in the image so it works on every OS.
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+    volumes:
+      # Your source, live. Edits on the host are picked up by the dev server.
+      - .:/app
+      # Everything below is hidden by the bind mount above. Named volumes keep
+      # Linux-built files (and their permissions) off your host filesystem.
+      - node_modules:/app/node_modules
+      - next_cache:/app/.next
+      - pnpm_store:/pnpm/store
+    # So a backend running on your machine is reachable from inside the
+    # container at http://host.docker.internal:8000 (needed for server-side
+    # fetches; the browser reaches the backend over plain localhost).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      # First start compiles the app, which takes a moment.
+      start_period: 60s
+
+  prod:
+    # Opt-in with --profile prod. Runs on a different host port so it can be
+    # started alongside the dev server.
+    profiles: ["prod"]
+    build:
+      context: .
+      target: runner
+      args:
+        # Inlined into the client bundle at build time. Change it with:
+        #   NEXT_PUBLIC_API_URL=https://api.example.com docker compose --profile prod build
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    image: imenanewsbox-v2:prod
+    restart: unless-stopped
+    ports:
+      - "${PROD_PORT:-3001}:3000"
+    environment:
+      NODE_ENV: production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  node_modules:
+  next_cache:
+  pnpm_store:

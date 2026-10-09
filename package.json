@@ -2,6 +2,7 @@
   "name": "imena-newsbox-app",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@12.10.1",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
